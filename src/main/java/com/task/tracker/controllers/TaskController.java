@@ -5,6 +5,7 @@ import com.task.tracker.infrastructure.repositories.postgres.TaskRepository;
 import com.task.tracker.models.Project;
 import com.task.tracker.models.Task;
 import com.task.tracker.services.TaskService;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -42,7 +43,7 @@ public class TaskController {
     }
 
     @PostMapping
-    public Task createTask(@RequestBody TaskRequest task) {
+    public Task createTask(@Valid @RequestBody TaskRequest task) {
         Task newTask = new Task(task.title(),task.description(), task.status(), task.dueDate());
         return taskService.saveTask(newTask);
     }

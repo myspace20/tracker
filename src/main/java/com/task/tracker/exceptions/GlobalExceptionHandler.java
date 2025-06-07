@@ -15,24 +15,31 @@ import java.util.stream.Collectors;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ApiErrorResponse> handleValidationError(
+    public ResponseEntity<ApiErrorResponse> handleValidationExceptions(
             MethodArgumentNotValidException ex,
             WebRequest request) {
-        String errors = ex.getBindingResult()
-                .getFieldErrors()
-                .stream()
-                .map(err -> err.getField() + ": " + err.getDefaultMessage())
-                .collect(Collectors.joining("; "));
+
+        StringBuilder errorMessageBuilder = new StringBuilder("Validation failed: ");
+
+        ex.getBindingResult().getFieldErrors().forEach(error -> {
+            errorMessageBuilder
+                    .append(error.getField())
+                    .append(" - ")
+                    .append(error.getDefaultMessage())
+                    .append("; ");
+        });
+
+        String errorMessage = errorMessageBuilder.toString().replaceAll(";\\s*$", "");
 
         return new ResponseEntity<>(
-        new ApiErrorResponse(
-                LocalDateTime.now(),
-                errors,
-                HttpStatus.UNPROCESSABLE_ENTITY.value(),
-                request.getDescription(false)
-        ), HttpStatus.UNPROCESSABLE_ENTITY
-        );
+                new ApiErrorResponse(LocalDateTime.now(),
+                        errorMessage,
+                        HttpStatus.UNPROCESSABLE_ENTITY.value(),
+                        request.getDescription(false)
+                ),  HttpStatus.UNPROCESSABLE_ENTITY);
     }
+
+
 
     @ExceptionHandler(ResourceNotFound.class)
     public ResponseEntity<Object> handleResourceNotFound(ResourceNotFound ex, WebRequest request) {

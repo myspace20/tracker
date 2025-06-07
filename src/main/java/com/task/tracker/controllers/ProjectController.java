@@ -3,6 +3,7 @@ package com.task.tracker.controllers;
 import com.task.tracker.dto.ProjectRequest;
 import com.task.tracker.models.Project;
 import com.task.tracker.services.ProjectService;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -38,7 +39,7 @@ public class ProjectController {
     }
 
     @PostMapping
-    public Project createProject(@RequestBody ProjectRequest project){
+    public Project createProject(@Valid @RequestBody ProjectRequest project){
         Project newProject = new Project(project.name(),project.description(),project.deadline());
         return projectService.createProject(newProject);
     }

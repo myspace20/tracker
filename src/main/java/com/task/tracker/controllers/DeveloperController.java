@@ -5,6 +5,7 @@ import com.task.tracker.dto.DeveloperRequest;
 import com.task.tracker.infrastructure.repositories.postgres.DeveloperRepository;
 import com.task.tracker.models.Developer;
 import com.task.tracker.services.DeveloperService;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -28,7 +29,7 @@ public class DeveloperController {
     }
 
     @PostMapping
-    public Developer createDeveloper(@RequestBody DeveloperRequest developer) {
+    public Developer createDeveloper(@Valid @RequestBody DeveloperRequest developer) {
         DeveloperRequest developerToCreate = new DeveloperRequest(developer.name(), developer.email());
         Developer newDeveloper = new Developer(developerToCreate.name(), developerToCreate.email());
         return developerService.saveDeveloper(newDeveloper);

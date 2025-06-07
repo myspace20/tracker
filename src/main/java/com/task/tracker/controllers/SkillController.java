@@ -3,6 +3,7 @@ package com.task.tracker.controllers;
 import com.task.tracker.dto.SkillRequest;
 import com.task.tracker.models.Skill;
 import com.task.tracker.services.SkillService;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,7 +24,7 @@ public class SkillController {
     }
 
     @PostMapping
-    public Skill createSkill(@RequestBody SkillRequest skill) {
+    public Skill createSkill(@Valid @RequestBody SkillRequest skill) {
         Skill newSkill = new Skill(skill.name());
         return  skillService.saveSkill(newSkill);
     }
