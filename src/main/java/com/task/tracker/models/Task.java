@@ -1,6 +1,7 @@
 package com.task.tracker.models;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -40,10 +41,12 @@ public class Task {
     private Date dueDate;
 
     @ManyToOne(optional = true)
+    @JsonIgnore
     @JoinColumn(name = "developer_id")
     private Developer developer;
 
     @ManyToOne
+    @JsonIgnore
     @JoinColumn(name = "project_id")
     private Project project;
 
