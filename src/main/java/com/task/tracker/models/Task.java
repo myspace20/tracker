@@ -35,8 +35,7 @@ public class Task {
     private String status;
 
 
-    @Size(min = 2, max = 255)
-    @NotBlank(message = "Task deadline is required")
+    @NotNull(message = "Task deadline is required")
     @Column(nullable = false, length = 255)
     private Date dueDate;
 

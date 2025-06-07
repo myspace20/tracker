@@ -16,6 +16,7 @@ import java.util.List;
 @Entity
 @Table(name = "projects")
 public class Project {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -30,8 +31,7 @@ public class Project {
     @Column(nullable = false, length = 255)
     private String description;
 
-    @Size(min = 2, max = 255)
-    @NotBlank(message = "Project deadline is required")
+    @NotNull(message = "Project deadline is required")
     @Column(nullable = false, length = 255)
     private Date deadline;
 

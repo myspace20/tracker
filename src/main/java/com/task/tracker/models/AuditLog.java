@@ -1,24 +1,29 @@
 package com.task.tracker.models;
 
-
-import jakarta.persistence.Id;
-import jakarta.persistence.PrePersist;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
+import org.springframework.data.mongodb.core.mapping.FieldType;
 
 import java.time.Instant;
 import java.util.Map;
 
-@Document("audit_log")
+@Document(collection = "audit_logs")
 public class AuditLog {
 
     @Id
     private String id;
 
     private String actionType;
+
     private String entityType;
-    private String entityId;
+
+    private Long entityId;
+
     private Instant timestamp;
+
     private String actorName;
 
     @Field("payload")
@@ -26,20 +31,14 @@ public class AuditLog {
 
     public AuditLog() {}
 
-    public AuditLog(String actionType, String entityType, String entityId, Instant timestamp,
+    public AuditLog(String actionType, Long entityId, String entityType,
                     String actorName, Map<String, Object> payload) {
         this.actionType = actionType;
         this.entityType = entityType;
         this.entityId = entityId;
-        this.timestamp = timestamp;
         this.actorName = actorName;
         this.payload = payload;
-    }
-
-
-    @PrePersist
-    public void prePersist() {
-        this.timestamp = Instant.now();
+        this.timestamp = Instant.now(); // Instant instead of Date
     }
 
 
@@ -63,11 +62,11 @@ public class AuditLog {
         this.entityType = entityType;
     }
 
-    public String getEntityId() {
+    public Long getEntityId() {
         return entityId;
     }
 
-    public void setEntityId(String entityId) {
+    public void setEntityId(Long entityId) {
         this.entityId = entityId;
     }
 
@@ -95,7 +94,3 @@ public class AuditLog {
         this.payload = payload;
     }
 }
-
-
-
-
