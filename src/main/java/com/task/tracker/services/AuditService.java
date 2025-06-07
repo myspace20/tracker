@@ -8,4 +8,5 @@ import java.util.List;
 public interface AuditService {
     List<AuditLog> getAuditLogs();
     AuditLog createAuditLog(AuditLog auditLog);
+    AuditLog findByActorName(String actorName);
 }

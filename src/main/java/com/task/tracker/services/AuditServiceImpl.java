@@ -22,6 +22,11 @@ public class AuditServiceImpl implements AuditService {
     }
 
     @Override
+    public AuditLog findByActorName(String actorName) {
+        return auditLogRepository.findByActorName(actorName);
+    }
+
+    @Override
     public List<AuditLog> getAuditLogs(){
         return auditLogRepository.findAll();
     }
