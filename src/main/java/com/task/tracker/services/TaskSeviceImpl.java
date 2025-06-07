@@ -1,7 +1,15 @@
 package com.task.tracker.services;
 
+import com.task.tracker.events.TaskDuePublisher;
 import com.task.tracker.infrastructure.repositories.postgres.TaskRepository;
+import com.task.tracker.models.Developer;
+import com.task.tracker.models.Project;
 import com.task.tracker.models.Task;
+import jakarta.transaction.Transactional;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -10,14 +18,38 @@ import java.util.List;
 public class TaskSeviceImpl implements TaskService{
 
     private final TaskRepository taskRepository;
+    private final DeveloperService developerService;
+    private final ProjectService projectService;
 
-    public TaskSeviceImpl(TaskRepository taskRepository) {
+    private final TaskDuePublisher eventPublisher;
+
+
+    public TaskSeviceImpl(TaskRepository taskRepository, DeveloperService developerService, ProjectService projectService, TaskDuePublisher eventPublisher) {
         this.taskRepository = taskRepository;
+        this.developerService = developerService;
+        this.projectService = projectService;
+        this.eventPublisher = eventPublisher;
     }
 
+
     @Override
-    public List<Task> getTasks() {
-        return taskRepository.findAll();
+//    @Scheduled(fixedDelay = 120000)
+    public void findOverdueTasks(){
+        List<Task> overdueTasks = taskRepository.findOverdueTasks();
+        for (Task task : overdueTasks) {
+            eventPublisher.publish(task);
+        }
+    }
+
+    public List<TaskRepository.TaskStatusCount> getTaskCountByStatus(){
+        return taskRepository.getTaskCountByStatus();
+    }
+
+
+    @Override
+    public List<Task> getTasks(int pageNo, int pageSize, String sortBy) {
+        Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by(Sort.Direction.DESC, sortBy));
+        return taskRepository.findAll(pageable).getContent();
     }
 
     @Override
@@ -26,24 +58,51 @@ public class TaskSeviceImpl implements TaskService{
     }
 
     @Override
+    public List<Task> getTasksByProject(Long projectId){
+        return taskRepository.findByProjectId(projectId);
+    }
+
+    @Override
+    public List<Task> getTasksByDeveloper(Long developerId){
+        return taskRepository.findByDeveloperId(developerId);
+    }
+
+    @Override
     public Task saveTask(Task task) {
         return taskRepository.save(task);
     }
 
     @Override
-    public Task updateTask(Long id ,Task task) {
+    public void assignTaskToDeveloper(Long taskId, Long userId) {
+        Task task = getTaskById(taskId);
+        Developer developer = developerService.getDeveloperById(userId);
+        task.setDeveloper(developer);
+        saveTask(task);
+    }
+
+    @Override
+    public void assignTaskToProject(Long projectId, Long taskId) {
+        Task task = getTaskById(taskId);
+        Project project = projectService.getProjectById(projectId);
+        task.setProject(project);
+        saveTask(task);
+    }
+
+
+    @Override
+    public void updateTask(Long id ,Task task) {
         Task taskToUpdate = this.getTaskById(id);
         taskToUpdate.setDescription(task.getDescription());
         taskToUpdate.setStatus(task.getStatus());
         taskToUpdate.setDueDate(task.getDueDate());
         taskToUpdate.setTitle(task.getTitle());
-        return taskRepository.save(taskToUpdate);
-
+        saveTask(taskToUpdate);
     }
 
     @Override
+    @Transactional
     public void deleteTask(Long id) {
-        this.getTaskById(id);
-        taskRepository.deleteById(id);
+        Task tasksToDelete = this.getTaskById(id);
+        taskRepository.delete(tasksToDelete);
     }
 }

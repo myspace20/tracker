@@ -2,6 +2,9 @@ package com.task.tracker.services;
 
 import com.task.tracker.infrastructure.repositories.postgres.DeveloperRepository;
 import com.task.tracker.models.Developer;
+import jakarta.transaction.Transactional;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,8 +19,9 @@ public class DeveloperServiceImpl implements DeveloperService {
     }
 
     @Override
-    public List<Developer> getAllDevelopers() {
-        return developerRepository.findAll();
+    public List<Developer> getAllDevelopers(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return developerRepository.findAll(pageable).getContent();
     }
 
     @Override
@@ -31,13 +35,20 @@ public class DeveloperServiceImpl implements DeveloperService {
     }
 
     @Override
+    public List<DeveloperRepository.DeveloperTaskCount> findTop5DevelopersWithTaskCount(){
+        return developerRepository.findTop5DevelopersWithTaskCount();
+    }
+
+    @Override
+    @Transactional
     public void deleteDeveloper(Long id) {
-        developerRepository.deleteById(id);
+        Developer developer = this.getDeveloperById(id);
+        developerRepository.delete(developer);
     }
 
     @Override
     public void updateDeveloper(Long id, Developer developer) {
-        Developer developerToBeUpdated = this.getDeveloperById(id);
+        Developer developerToBeUpdated = getDeveloperById(id);
         developerToBeUpdated.setName(developer.getName());
         developerToBeUpdated.setEmail(developer.getEmail());
         developerRepository.save(developerToBeUpdated);

@@ -31,15 +31,15 @@ public class SkillServiceImpl implements SkillService {
 
     @Override
     public void deleteSkillById(Long id) {
-        getSkillById(id);
-        skillRepository.deleteById(id);
+        Skill skill = getSkillById(id);
+        skillRepository.delete(skill);
     }
 
     @Override
     public void updateSkill(Long id, Skill skill) {
         Skill updatedSkill = this.getSkillById(id);
         updatedSkill.setSkillName(skill.getSkillName());
-        skillRepository.save(skill);
+        skillRepository.save(updatedSkill);
     }
 }
 

@@ -2,6 +2,10 @@ package com.task.tracker.services;
 
 import com.task.tracker.infrastructure.repositories.postgres.ProjectRepository;
 import com.task.tracker.models.Project;
+import jakarta.transaction.Transactional;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,11 +20,20 @@ public class ProjectServiceImpl implements ProjectService{
     }
 
     @Override
-    public List<Project> getAllProjects() {
-        return projectRepository.findAll();
+    @Cacheable(value = "projects", key = "#page")
+    public List<Project> getAllProjects(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return projectRepository.findAll(pageable).getContent();
     }
 
     @Override
+    public List<Project> findProjectsWithoutTasks(){
+        return projectRepository.findProjectsWithoutTasks();
+    }
+
+
+    @Override
+    @Cacheable(key = "#id", value = "project")
     public Project getProjectById(Long id) {
         return projectRepository.findById(id).get();
     }
@@ -31,8 +44,10 @@ public class ProjectServiceImpl implements ProjectService{
     }
 
     @Override
+    @Transactional
     public void deleteProject(Long id) {
-        projectRepository.deleteById(id);
+        Project project = this.getProjectById(id);
+        projectRepository.delete(project);
     }
 
     @Override
