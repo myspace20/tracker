@@ -35,7 +35,7 @@ public class Task {
 
 
     @Size(min = 2, max = 255)
-    @NotBlank(message = "Task dueDate is required")
+    @NotBlank(message = "Task deadline is required")
     @Column(nullable = false, length = 255)
     private Date dueDate;
 
@@ -46,6 +46,15 @@ public class Task {
     @ManyToOne
     @JoinColumn(name = "project_id")
     private Project project;
+
+    public Project getProject() {
+        return project;
+    }
+
+    public void setProject(Project project) {
+        this.project = project;
+    }
+
 
     public Task() {
 
@@ -115,4 +124,41 @@ public class Task {
     public void setDueDate(Date dueDate) {
         this.dueDate = dueDate;
     }
+
+    public Instant getCreatedAt() {
+        return createdAt;
+    }
+    public void setCreatedAt(Instant createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public Instant getUpdatedAt() {
+        return updatedAt;
+    }
+    public void setUpdatedAt(Instant updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
+
+    public Developer getDeveloper() {
+        return developer;
+    }
+
+    public void setDeveloper(Developer developer) {
+        this.developer = developer;
+    }
+
+    @Override
+    public String toString() {
+        return "Task{" +
+                "id=" + id +
+                ", title='" + title + '\'' +
+                ", description='" + description + '\'' +
+                ", status='" + status + '\'' +
+                ", dueDate=" + dueDate +
+                ", developer=" + (developer != null ? developer.getId() : "null") +
+                ", project=" + (project != null ? project.getId() : "null") +
+                '}';
+    }
+
 }

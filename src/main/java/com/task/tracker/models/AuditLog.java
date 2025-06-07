@@ -2,6 +2,7 @@ package com.task.tracker.models;
 
 
 import jakarta.persistence.Id;
+import jakarta.persistence.PrePersist;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
@@ -33,6 +34,12 @@ public class AuditLog {
         this.timestamp = timestamp;
         this.actorName = actorName;
         this.payload = payload;
+    }
+
+
+    @PrePersist
+    public void prePersist() {
+        this.timestamp = Instant.now();
     }
 
 
