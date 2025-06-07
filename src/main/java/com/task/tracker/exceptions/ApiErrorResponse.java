@@ -1,4 +1,6 @@
 package com.task.tracker.exceptions;
 
-public record ApiErrorResponse() {
+import java.time.LocalDateTime;
+
+public record ApiErrorResponse(LocalDateTime timestamp,String errorMessage,int statusCode, String path) {
 }
