@@ -1,5 +1,6 @@
 package com.task.tracker.controllers;
 
+import com.task.tracker.dto.TaskRequest;
 import com.task.tracker.infrastructure.repositories.postgres.TaskRepository;
 import com.task.tracker.models.Project;
 import com.task.tracker.models.Task;
@@ -35,15 +36,15 @@ public class TaskController {
         return taskService.getTaskCountByStatus();
     }
 
-
     @GetMapping("/{id}")
     public Task getTaskById(@PathVariable Long id) {
         return taskService.getTaskById(id);
     }
 
     @PostMapping
-    public Task createTask(@RequestBody Task task) {
-        return taskService.saveTask(task);
+    public Task createTask(@RequestBody TaskRequest task) {
+        Task newTask = new Task(task.title(),task.description(), task.status(), task.dueDate());
+        return taskService.saveTask(newTask);
     }
 
     @PutMapping("/{id}")
