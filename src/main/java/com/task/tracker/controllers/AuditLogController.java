@@ -8,7 +8,7 @@ import java.util.List;
 
 
 @RestController
-@RequestMapping("/api/audit_logs")
+@RequestMapping("/api/v1/audit_logs")
 public class AuditLogController {
 
     private final AuditService auditService;

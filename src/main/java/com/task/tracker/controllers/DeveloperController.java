@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/developers")
+@RequestMapping("/api/v1/developers")
 public class DeveloperController {
 
     private final DeveloperService developerService;
