@@ -21,4 +21,9 @@ public class AuditLogController {
     public List<AuditLog> getAllAuditLogs() {
         return auditService.getAuditLogs();
     }
+
+    @GetMapping("/{actorName}")
+    public AuditLog getAuditLogActorName(@PathVariable String actorName) {
+        return auditService.findByActorName(actorName);
+    }
 }

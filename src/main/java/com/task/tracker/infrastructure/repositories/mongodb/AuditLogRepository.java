@@ -7,4 +7,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface AuditLogRepository extends MongoRepository<AuditLog, String> {
+    AuditLog findByActorName(String actorName);
 }
