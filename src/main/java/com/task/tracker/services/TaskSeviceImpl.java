@@ -1,6 +1,7 @@
 package com.task.tracker.services;
 
 import com.task.tracker.events.TaskDuePublisher;
+import com.task.tracker.exceptions.ResourceNotFound;
 import com.task.tracker.infrastructure.repositories.postgres.TaskRepository;
 import com.task.tracker.models.Developer;
 import com.task.tracker.models.Project;
@@ -54,7 +55,7 @@ public class TaskSeviceImpl implements TaskService{
 
     @Override
     public Task getTaskById(Long id) {
-        return taskRepository.findById(id).orElse(null);
+        return taskRepository.findById(id).orElseThrow(()-> new ResourceNotFound("Task not found"));
     }
 
     @Override
@@ -91,7 +92,7 @@ public class TaskSeviceImpl implements TaskService{
 
     @Override
     public void updateTask(Long id ,Task task) {
-        Task taskToUpdate = this.getTaskById(id);
+        Task taskToUpdate = getTaskById(id);
         taskToUpdate.setDescription(task.getDescription());
         taskToUpdate.setStatus(task.getStatus());
         taskToUpdate.setDueDate(task.getDueDate());
@@ -102,7 +103,7 @@ public class TaskSeviceImpl implements TaskService{
     @Override
     @Transactional
     public void deleteTask(Long id) {
-        Task tasksToDelete = this.getTaskById(id);
+        Task tasksToDelete = getTaskById(id);
         taskRepository.delete(tasksToDelete);
     }
 }

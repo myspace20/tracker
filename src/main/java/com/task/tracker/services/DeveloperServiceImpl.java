@@ -1,5 +1,6 @@
 package com.task.tracker.services;
 
+import com.task.tracker.exceptions.ResourceNotFound;
 import com.task.tracker.infrastructure.repositories.postgres.DeveloperRepository;
 import com.task.tracker.models.Developer;
 import jakarta.transaction.Transactional;
@@ -31,7 +32,7 @@ public class DeveloperServiceImpl implements DeveloperService {
 
     @Override
     public  Developer getDeveloperById(Long id) {
-        return developerRepository.findById(id).orElse(null);
+        return developerRepository.findById(id).orElseThrow(()-> new ResourceNotFound("Developer not found"));
     }
 
     @Override
@@ -42,7 +43,7 @@ public class DeveloperServiceImpl implements DeveloperService {
     @Override
     @Transactional
     public void deleteDeveloper(Long id) {
-        Developer developer = this.getDeveloperById(id);
+        Developer developer = getDeveloperById(id);
         developerRepository.delete(developer);
     }
 

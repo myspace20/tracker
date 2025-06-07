@@ -1,5 +1,6 @@
 package com.task.tracker.services;
 
+import com.task.tracker.exceptions.ResourceNotFound;
 import com.task.tracker.infrastructure.repositories.postgres.ProjectRepository;
 import com.task.tracker.models.Project;
 import jakarta.transaction.Transactional;
@@ -35,7 +36,7 @@ public class ProjectServiceImpl implements ProjectService{
     @Override
     @Cacheable(key = "#id", value = "project")
     public Project getProjectById(Long id) {
-        return projectRepository.findById(id).get();
+        return projectRepository.findById(id).orElseThrow(() -> new ResourceNotFound("Project not found"));
     }
 
     @Override
@@ -46,13 +47,13 @@ public class ProjectServiceImpl implements ProjectService{
     @Override
     @Transactional
     public void deleteProject(Long id) {
-        Project project = this.getProjectById(id);
+        Project project = getProjectById(id);
         projectRepository.delete(project);
     }
 
     @Override
     public void updateProject(Long id, Project project) {
-        Project updatedProject = projectRepository.findById(id).get();
+        Project updatedProject = getProjectById(id);
         updatedProject.setName(project.getName());
         updatedProject.setName(project.getName());
         updatedProject.setDeadline(project.getDeadline());

@@ -1,5 +1,6 @@
 package com.task.tracker.services;
 
+import com.task.tracker.exceptions.ResourceNotFound;
 import com.task.tracker.infrastructure.repositories.postgres.SkillRepository;
 import com.task.tracker.models.Skill;
 import org.springframework.stereotype.Service;
@@ -26,7 +27,7 @@ public class SkillServiceImpl implements SkillService {
 
     @Override
     public Skill getSkillById(Long id) {
-        return skillRepository.findById(id).orElse(null);
+        return skillRepository.findById(id).orElseThrow(()-> new ResourceNotFound("Skill not found"));
     }
 
     @Override
