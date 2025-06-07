@@ -1,0 +1,56 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        BUILD_HOME: /tracker
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
+      - mongodb
+      - mailhog
+    environment:
+      SPRING_PROFILES_ACTIVE: default
+    networks:
+      - tracker-network
+
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: tracker
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: Around22!
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - tracker-network
+
+  mongodb:
+    image: mongo:7
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodbdata:/data/db
+    networks:
+      - tracker-network
+
+  mailhog:
+    image: mailhog/mailhog
+    ports:
+      - "8025:8025"
+      - "1025:1025"
+    networks:
+      - tracker-network
+
+volumes:
+  pgdata:
+  mongodbdata:
+
+networks:
+  tracker-network:
