@@ -14,7 +14,32 @@ services:
       - mongodb
       - mailhog
     environment:
-      SPRING_PROFILES_ACTIVE: default
+      SPRING_APPLICATION_NAME: tracker
+
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/tracker
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: Around22!
+      SPRING_JPA_SHOW_SQL: "true"
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT: org.hibernate.dialect.PostgreSQLDialect
+
+      SPRING_DATA_MONGODB_URI: mongodb://mongodb:27017/admin
+      SPRING_DATA_MONGODB_AUTO_INDEX_CREATION: "true"
+
+      SPRING_MAIL_HOST: mailhog
+      SPRING_MAIL_PORT: 1025
+      SPRING_MAIL_USERNAME: ""
+      SPRING_MAIL_PASSWORD: ""
+      SPRING_MAIL_PROPERTIES_MAIL_SMTP_AUTH: "false"
+      SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLE: "false"
+
+      SPRINGDOC_API_DOCS_PATH: /api-docs
+      SPRINGDOC_SWAGGER_UI_PATH: /swagger-ui-custom.html
+      SPRINGDOC_INFO_TITLE: Project Tracker Rest API
+      SPRINGDOC_INFO_DESCRIPTION: API for project tracking application
+      SPRINGDOC_INFO_VERSION: 1.0.0
+      SPRINGDOC_INFO_CONTACT_NAME: Roger Dankudi Satsi
+      SPRINGDOC_INFO_CONTACT_EMAIL: rogersatsi98@outlook.com
     networks:
       - tracker-network
 
@@ -30,6 +55,11 @@ services:
       - pgdata:/var/lib/postgresql/data
     networks:
       - tracker-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   mongodb:
     image: mongo:7
