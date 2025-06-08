@@ -4,7 +4,7 @@ import com.task.tracker.dto.TaskResponse;
 import com.task.tracker.models.Task;
 
 public class TaskMapper {
-    public static TaskResponse toResponse(Task task) {
+    public static TaskResponse toDto(Task task) {
         return new TaskResponse(
                 task.getId(),
                 task.getTitle(),
