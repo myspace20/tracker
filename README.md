@@ -6,7 +6,7 @@ This is a Spring Boot application that provides a RESTful API for managing tasks
 ## Architecture
 The application follows a layered architecture, as depicted in the following Mermaid flowchart:
 
-[![Architecture Diagram](https://www.mermaidchart.com/app/projects/af12b037-dc6f-4388-b3c4-4bb391a62d45/diagrams/bb33bbb3-02b5-4fea-8eae-3d384c46fa75/share/invite/eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkb2N1bWVudElEIjoiYmIzM2JiYjMtMDJiNS00ZmVhLThlYWUtM2QzODRjNDZmYTc1IiwiYWNjZXNzIjoiVmlldyIsImlhdCI6MTc0OTM0MzA0Nn0.lBxtEI7VRlpsM6lDmeFTthVDht28N9LdZpAouFPB)](arch.png)
+![Architecture Diagram](arch.png)
 
 ### Architecture Layers
 - **Client Layer**: External clients (e.g., UI or API clients) interact with the application via REST endpoints.
@@ -61,8 +61,7 @@ cd tracker
   
   **ERD**
 
-[![Entity Relational Diagram](https://www.mermaidchart.com/app/projects/af12b037-dc6f-4388-b3c4-4bb391a62d45/diagrams/bb33bbb3-02b5-4fea-8eae-3d384c46fa75/share/invite/eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkb2N1bWVudElEIjoiYmIzM2JiYjMtMDJiNS00ZmVhLThlYWUtM2QzODRjNDZmYTc1IiwiYWNjZXNzIjoiVmlldyIsImlhdCI6MTc0OTM0MzA0Nn0.lBxtEI7VRlpsM6lDmeFTthVDht28N9LdZpAouFPB)](erd.png)
-
+![Entity Relational Diagram](erd.png)
 
 
 ### 3. Configure Mailhog
@@ -93,6 +92,11 @@ springdoc.info.title=Task Management API
 springdoc.info.description=API for managing tasks, developers, projects, skills, and audit logs
 springdoc.info.version=1.0.0
 ```
+
+***Sample Endpoints***
+
+![Swagger Endpoints](swagger.png)
+
 
 ### 6. Run the Application
 ```bash
