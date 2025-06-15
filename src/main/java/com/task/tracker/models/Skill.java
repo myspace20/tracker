@@ -23,7 +23,7 @@ public class Skill {
     private String skillName;
 
     @ManyToMany(mappedBy = "skills")
-    private Set<Developer> developers = new HashSet<>();
+    private Set<User> developers = new HashSet<>();
 
     @PrePersist
     protected void onCreate() {
