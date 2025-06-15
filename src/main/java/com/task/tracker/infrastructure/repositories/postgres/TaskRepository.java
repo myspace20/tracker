@@ -1,6 +1,5 @@
 package com.task.tracker.infrastructure.repositories.postgres;
 
-import com.task.tracker.models.Project;
 import com.task.tracker.models.Task;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
