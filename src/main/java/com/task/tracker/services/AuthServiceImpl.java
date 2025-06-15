@@ -75,7 +75,7 @@ public class AuthServiceImpl implements AuthService {
     public TokenResponse generateRefreshToken(String refreshToken) {
         boolean isValidRefreshToken = jwtUtil.validateToken(refreshToken);
         if (!isValidRefreshToken) {
-            throw new RuntimeException("Invalid access token");
+            throw new InvalidTokenException("Invalid access token");
         }
         TokenClaims claims = jwtUtil.getUsernameFromToken(refreshToken);
         String newAccessToken = jwtUtil.generateAccesToken(claims.email(),claims.roles());
