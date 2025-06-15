@@ -38,7 +38,7 @@ public class AuditLog {
         this.entityId = entityId;
         this.actorName = actorName;
         this.payload = payload;
-        this.timestamp = Instant.now(); // Instant instead of Date
+        this.timestamp = Instant.now();
     }
 
 
