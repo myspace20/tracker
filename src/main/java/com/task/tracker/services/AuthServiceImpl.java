@@ -4,6 +4,7 @@ import com.task.tracker.dto.LoginRequest;
 import com.task.tracker.dto.RegisterRequest;
 import com.task.tracker.dto.TokenClaims;
 import com.task.tracker.dto.TokenResponse;
+import com.task.tracker.exceptions.InvalidTokenException;
 import com.task.tracker.exceptions.ResourceNotFound;
 import com.task.tracker.infrastructure.repositories.postgres.RoleRepository;
 import com.task.tracker.infrastructure.repositories.postgres.UserRepository;
