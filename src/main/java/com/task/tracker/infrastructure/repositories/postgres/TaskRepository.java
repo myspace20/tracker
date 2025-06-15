@@ -1,6 +1,5 @@
 package com.task.tracker.infrastructure.repositories.postgres;
 
-import com.task.tracker.models.Project;
 import com.task.tracker.models.Task;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -13,8 +12,7 @@ import java.util.List;
 @Repository
 public interface TaskRepository extends JpaRepository<Task, Long> {
     List<Task> findByProjectId(Long projectId);
-    List<Task> findByDeveloperId(Long developerId);
-
+    List<Task> findByUserId(Long userId);
     @Query("SELECT t FROM Task t WHERE t.dueDate < CURRENT_DATE")
     List<Task> findOverdueTasks();
 

@@ -1,11 +1,8 @@
 package com.task.tracker.models;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
-import org.springframework.data.mongodb.core.mapping.FieldType;
 
 import java.time.Instant;
 import java.util.Map;
@@ -38,7 +35,7 @@ public class AuditLog {
         this.entityId = entityId;
         this.actorName = actorName;
         this.payload = payload;
-        this.timestamp = Instant.now(); // Instant instead of Date
+        this.timestamp = Instant.now();
     }
 
 

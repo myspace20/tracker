@@ -3,14 +3,14 @@ package com.task.tracker.services;
 import com.task.tracker.events.TaskDuePublisher;
 import com.task.tracker.exceptions.ResourceNotFound;
 import com.task.tracker.infrastructure.repositories.postgres.TaskRepository;
-import com.task.tracker.models.Developer;
 import com.task.tracker.models.Project;
 import com.task.tracker.models.Task;
+import com.task.tracker.models.User;
 import jakarta.transaction.Transactional;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -19,15 +19,15 @@ import java.util.List;
 public class TaskSeviceImpl implements TaskService{
 
     private final TaskRepository taskRepository;
-    private final DeveloperService developerService;
+    private final UserService userService;
     private final ProjectService projectService;
 
     private final TaskDuePublisher eventPublisher;
 
 
-    public TaskSeviceImpl(TaskRepository taskRepository, DeveloperService developerService, ProjectService projectService, TaskDuePublisher eventPublisher) {
+    public TaskSeviceImpl(TaskRepository taskRepository, UserService userService, ProjectService projectService, TaskDuePublisher eventPublisher) {
         this.taskRepository = taskRepository;
-        this.developerService = developerService;
+        this.userService = userService;
         this.projectService = projectService;
         this.eventPublisher = eventPublisher;
     }
@@ -65,7 +65,7 @@ public class TaskSeviceImpl implements TaskService{
 
     @Override
     public List<Task> getTasksByDeveloper(Long developerId){
-        return taskRepository.findByDeveloperId(developerId);
+        return taskRepository.findByUserId(developerId);
     }
 
     @Override
@@ -76,8 +76,8 @@ public class TaskSeviceImpl implements TaskService{
     @Override
     public void assignTaskToDeveloper(Long taskId, Long userId) {
         Task task = getTaskById(taskId);
-        Developer developer = developerService.getDeveloperById(userId);
-        task.setDeveloper(developer);
+        User developer = userService.getUserById(userId);
+        task.setUser(developer);
         saveTask(task);
     }
 
