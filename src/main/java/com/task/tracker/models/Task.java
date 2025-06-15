@@ -19,23 +19,16 @@ public class Task {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Size(min = 2, max = 255)
-    @NotBlank(message = "Title name is required")
     @Column(nullable = false, length = 255)
     private String title;
 
-    @Size(min = 2, max = 255)
-    @NotBlank(message = "Description name is required")
     @Column(nullable = false, length = 255)
     private String description;
 
-    @Size(min = 2, max = 255)
-    @NotBlank(message = "Status name is required")
     @Column(nullable = false, length = 255)
     private String status;
 
 
-    @NotNull(message = "Task deadline is required")
     @Column(nullable = false, length = 255)
     private Date dueDate;
 
@@ -142,12 +135,12 @@ public class Task {
     }
 
 
-    public Developer getDeveloper() {
-        return developer;
+    public User getUser() {
+        return user;
     }
 
-    public void setDeveloper(Developer developer) {
-        this.developer = developer;
+    public void setUser(User user) {
+        this.user = user;
     }
 
     @Override
@@ -158,7 +151,7 @@ public class Task {
                 ", description='" + description + '\'' +
                 ", status='" + status + '\'' +
                 ", dueDate=" + dueDate +
-                ", developer=" + (developer != null ? developer.getId() : "null") +
+                ", user=" + (user != null ? user.getId() : "null") +
                 ", project=" + (project != null ? project.getId() : "null") +
                 '}';
     }
