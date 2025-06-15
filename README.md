@@ -192,6 +192,20 @@ dependencies {
   - Verify event listeners are configured for Spring Events.
 
 
+## Security
+Security security with role-based access control is used in this project together with
+JsonWebTokens to store user claims in a secured manner. OAuth2.0 is also used to
+authenticate user from Google.
+
+Below is a sequence diagram illustrating the the authentication flow.
+![Swagger Endpoints](sequence_diagram.png)
+
+
+In production, the project uses CORS and HTTPS to project it from malicious
+actors.
+
+
+
 
 ## Contributing
 - Fork the repository.
