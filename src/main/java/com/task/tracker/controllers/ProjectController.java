@@ -11,6 +11,7 @@ import com.task.tracker.util.ObjectToPayload;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -47,13 +48,15 @@ public class ProjectController {
     }
 
 
-    @GetMapping("/{id}")
-    public ResponseEntity<ProjectResponse> getProject(@PathVariable Long id){
+
+    @GetMapping("/{id}/summary")
+    public ResponseEntity<ProjectResponse> getProjectSummary(@PathVariable Long id){
         Project project =  projectService.getProjectById(id);
         return ResponseEntity.ok( ProjectMapper.toDto(project));
     }
 
     @PostMapping
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     public ResponseEntity<ProjectResponse> createProject(@Valid @RequestBody ProjectRequest project){
         Project newProject = new Project(project.name(),project.description(),project.deadline());
         Project savedProject = projectService.createProject(newProject);
@@ -65,6 +68,7 @@ public class ProjectController {
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PutMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     public void updateProject(@PathVariable Long id, @RequestBody Project project){
         Map<String, Object> payload = ObjectToPayload.createPayload("project",project);
         AuditLog auditLog = new AuditLog("update project", id,Project.class.getName(),"Roger",payload);
