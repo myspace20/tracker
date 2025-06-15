@@ -13,8 +13,7 @@ import java.util.List;
 @Repository
 public interface TaskRepository extends JpaRepository<Task, Long> {
     List<Task> findByProjectId(Long projectId);
-    List<Task> findByDeveloperId(Long developerId);
-
+    List<Task> findByUserId(Long userId);
     @Query("SELECT t FROM Task t WHERE t.dueDate < CURRENT_DATE")
     List<Task> findOverdueTasks();
 
