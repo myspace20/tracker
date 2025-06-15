@@ -48,7 +48,7 @@ public class ProjectController {
     }
 
 
-
+    @PreAuthorize("isAuthenticated()")
     @GetMapping("/{id}/summary")
     public ResponseEntity<ProjectResponse> getProjectSummary(@PathVariable Long id){
         Project project =  projectService.getProjectById(id);
