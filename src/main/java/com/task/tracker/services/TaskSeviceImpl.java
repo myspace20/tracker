@@ -7,6 +7,7 @@ import com.task.tracker.models.Project;
 import com.task.tracker.models.Task;
 import com.task.tracker.models.User;
 import jakarta.transaction.Transactional;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -48,12 +49,14 @@ public class TaskSeviceImpl implements TaskService{
 
 
     @Override
+    @Cacheable(value = "tasks")
     public List<Task> getTasks(int pageNo, int pageSize, String sortBy) {
         Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by(Sort.Direction.DESC, sortBy));
         return taskRepository.findAll(pageable).getContent();
     }
 
     @Override
+    @Cacheable(value = "task", key = "#id")
     public Task getTaskById(Long id) {
         return taskRepository.findById(id).orElseThrow(()-> new ResourceNotFound("Task not found"));
     }
