@@ -16,6 +16,9 @@ services:
     environment:
       SPRING_APPLICATION_NAME: tracker
 
+      SPRING_PROFILES_ACTIVE: dev
+
+
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/tracker
       SPRING_DATASOURCE_USERNAME: postgres
       SPRING_DATASOURCE_PASSWORD: Around22!
@@ -40,6 +43,64 @@ services:
       SPRINGDOC_INFO_VERSION: 1.0.0
       SPRINGDOC_INFO_CONTACT_NAME: Roger Dankudi Satsi
       SPRINGDOC_INFO_CONTACT_EMAIL: rogersatsi98@outlook.com
+
+      SPRING_CACHE_TYPE: redis
+      SPRING_CACHE_CAFFEINE_SPEC: recordStats
+      MANAGEMENT_METRICS_ENABLE_REDIS: "true"
+      MANAGEMENT_METRICS_ENABLE_CAFFEINE: "true"
+      MANAGEMENT_ENDPOINT_METRICS_ACCESS: unrestricted
+      MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE: "*"
+      MANAGEMENT_PROMETHEUS_METRICS_EXPORT_ENABLED: "true"
+
+      LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_SECURITY: TRACE
+      LOGGING_LEVEL_COM_TASK_TRACKER_SERVICES: DEBUG
+
+      JWT_SECRET: S3xhCmjwP3D1KVzKmR/YTSywGmV1pElkN3KKMvUC2zI=
+      JWT_ACCESS_EXPIRATION: 3600000
+      JWT_REFRESH_EXPIRATION: 86400000
+
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      SPRING_DATA_REDIS_HOST: redis
+      SPRING_DATA_REDIS_PORT: 6379
+
+    networks:
+      - tracker-network
+
+  redis:
+    image: redis:7-alpine
+    container_name: redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    restart: always
+    networks:
+      - tracker-network
+
+  prometheus:
+    image: prom/prometheus
+    container_name: prometheus
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"
+    depends_on:
+      - app
+    restart: always
+    networks:
+      - tracker-network
+
+  grafana:
+    image: grafana/grafana
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana_data:/var/lib/grafana
+    depends_on:
+      - prometheus
+    restart: always
     networks:
       - tracker-network
 
@@ -53,13 +114,13 @@ services:
       - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
-    networks:
-      - tracker-network
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 10s
       timeout: 5s
       retries: 5
+    networks:
+      - tracker-network
 
   mongodb:
     image: mongo:7
@@ -81,6 +142,8 @@ services:
 volumes:
   pgdata:
   mongodbdata:
+  redis_data:
+  grafana_data:
 
 networks:
   tracker-network:
