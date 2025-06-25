@@ -33,6 +33,12 @@ import java.util.List;
 @EnableCaching
 public class CacheConfig {
 
+    int MAXIMUM_CAPACITY;
+    int INITIAL_CAPACITY;
+
+    int TTL_EXPIRATION;
+
+
     List<String> cacheNames = new ArrayList<>(
             List.of(
                     "tasks",
