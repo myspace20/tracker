@@ -7,11 +7,13 @@ import com.task.tracker.models.Project;
 import com.task.tracker.models.Task;
 import com.task.tracker.models.User;
 import jakarta.transaction.Transactional;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -49,7 +51,10 @@ public class TaskSeviceImpl implements TaskService{
 
 
     @Override
-    @Cacheable(value = "tasks")
+    @Cacheable(
+            value = "paginated_tasks",
+            key = "{#pageNo,#pageSize,#sortBy}"
+    )
     public List<Task> getTasks(int pageNo, int pageSize, String sortBy) {
         Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by(Sort.Direction.DESC, sortBy));
         return taskRepository.findAll(pageable).getContent();
@@ -58,16 +63,19 @@ public class TaskSeviceImpl implements TaskService{
     @Override
     @Cacheable(value = "task", key = "#id")
     public Task getTaskById(Long id) {
-        return taskRepository.findById(id).orElseThrow(()-> new ResourceNotFound("Task not found"));
+        return taskRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFound("Task not found"));
     }
 
     @Override
-    public List<Task> getTasksByProject(Long projectId){
+    @Cacheable(value = "project_tasks", key = "#projectId")
+    public List<Task> getTasksByProject(Long projectId) {
         return taskRepository.findByProjectId(projectId);
     }
 
     @Override
-    public List<Task> getTasksByDeveloper(Long developerId){
+    @Cacheable(value = "developer_tasks", key = "#developerId")
+    public List<Task> getTasksByDeveloper(Long developerId) {
         return taskRepository.findByUserId(developerId);
     }
 
@@ -77,24 +85,44 @@ public class TaskSeviceImpl implements TaskService{
     }
 
     @Override
-    public void assignTaskToDeveloper(Long taskId, Long userId) {
+    @Caching(
+            put = {
+                    @CachePut(value = "tasks", key = "#taskId"),
+                    @CachePut(value = "task", key = "#taskId")
+            }
+    )
+    public Task assignTaskToDeveloper(Long taskId, Long userId) {
         Task task = getTaskById(taskId);
         User developer = userService.getUserById(userId);
         task.setUser(developer);
-        saveTask(task);
+        return saveTask(task);
     }
 
+    @Caching(
+            put = {
+                    @CachePut(value = "projects", key = "#projectId"),
+                    @CachePut(value = "project", key = "#projectId"),
+                    @CachePut(value = "tasks", key = "#taskId"),
+                    @CachePut(value = "task", key = "#taskId")
+            }
+    )
     @Override
-    public void assignTaskToProject(Long projectId, Long taskId) {
+    public Task assignTaskToProject(Long projectId, Long taskId) {
         Task task = getTaskById(taskId);
         Project project = projectService.getProjectById(projectId);
         task.setProject(project);
-        saveTask(task);
+        return saveTask(task);
     }
 
 
     @Override
-    public void updateTask(Long id ,Task task) {
+    @Caching(
+            put = {
+                    @CachePut(value = "tasks", key = "#id"),
+                    @CachePut(value = "task", key = "#id")
+            }
+    )
+    public void updateTask(Long id, Task task) {
         Task taskToUpdate = getTaskById(id);
         taskToUpdate.setDescription(task.getDescription());
         taskToUpdate.setStatus(task.getStatus());
@@ -103,8 +131,14 @@ public class TaskSeviceImpl implements TaskService{
         saveTask(taskToUpdate);
     }
 
+
     @Override
     @Transactional
+    @Caching(
+            evict = {
+                    @CacheEvict(value = "tasks"),
+                    @CacheEvict(value = "task", key = "#id")
+            })
     public void deleteTask(Long id) {
         Task tasksToDelete = getTaskById(id);
         taskRepository.delete(tasksToDelete);
