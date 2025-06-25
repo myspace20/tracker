@@ -36,7 +36,12 @@ public class CacheConfig {
     List<String> cacheNames = new ArrayList<>(
             List.of(
                     "tasks",
-                    "projects"
+                    "projects",
+                    "task",
+                    "tasks",
+                    "paginated_tasks",
+                    "project_tasks",
+                    "developer_tasks"
             )
     );
 
