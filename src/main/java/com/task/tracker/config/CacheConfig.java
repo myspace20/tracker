@@ -43,8 +43,6 @@ public class CacheConfig {
             List.of(
                     "tasks",
                     "projects",
-                    "task",
-                    "tasks",
                     "paginated_tasks",
                     "project_tasks",
                     "developer_tasks"
