@@ -32,12 +32,12 @@ public class Task {
     @Column(nullable = false, length = 255)
     private Date dueDate;
 
-    @ManyToOne(optional = true)
+    @ManyToOne(optional = true,fetch = FetchType.LAZY)
     @JsonIgnore
     @JoinColumn(name = "user_id")
     private User user;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JsonIgnore
     @JoinColumn(name = "project_id")
     private Project project;
