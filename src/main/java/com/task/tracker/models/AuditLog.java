@@ -24,12 +24,12 @@ public class AuditLog {
     private String actorName;
 
     @Field("payload")
-    private Map<String, Object> payload;
+    private Object payload;
 
     public AuditLog() {}
 
     public AuditLog(String actionType, Long entityId, String entityType,
-                    String actorName, Map<String, Object> payload) {
+                    String actorName, Object payload) {
         this.actionType = actionType;
         this.entityType = entityType;
         this.entityId = entityId;
@@ -83,7 +83,7 @@ public class AuditLog {
         this.actorName = actorName;
     }
 
-    public Map<String, Object> getPayload() {
+    public Object getPayload() {
         return payload;
     }
 
