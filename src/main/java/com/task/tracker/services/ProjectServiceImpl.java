@@ -4,6 +4,7 @@ import com.task.tracker.exceptions.ResourceNotFound;
 import com.task.tracker.infrastructure.repositories.postgres.ProjectRepository;
 import com.task.tracker.models.Project;
 import jakarta.transaction.Transactional;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -28,35 +29,39 @@ public class ProjectServiceImpl implements ProjectService{
     }
 
     @Override
+    @Cacheable(value = "projects")
     public List<Project> findProjectsWithoutTasks(){
         return projectRepository.findProjectsWithoutTasks();
     }
 
 
     @Override
-    @Cacheable(key = "#id", value = "project")
+    @Cacheable(key = "#id", value = "projects")
     public Project getProjectById(Long id) {
         return projectRepository.findById(id).orElseThrow(() -> new ResourceNotFound("Project not found"));
     }
 
     @Override
+    @CacheEvict(value={"projects"}, allEntries = true)
     public Project createProject(Project project) {
         return projectRepository.save(project);
     }
 
     @Override
     @Transactional
+    @CacheEvict(value={"projects"},  allEntries = true)
     public void deleteProject(Long id) {
         Project project = getProjectById(id);
         projectRepository.delete(project);
     }
 
     @Override
-    public void updateProject(Long id, Project project) {
+    @CacheEvict(value={"projects"},allEntries = true, key = "#id")
+    public Project updateProject(Long id, Project project) {
         Project updatedProject = getProjectById(id);
         updatedProject.setName(project.getName());
         updatedProject.setName(project.getName());
         updatedProject.setDeadline(project.getDeadline());
-        projectRepository.save(updatedProject);
+        return projectRepository.save(updatedProject);
     }
 }
