@@ -36,8 +36,7 @@ public class ApplicationAccessDeniedHandler implements AccessDeniedHandler {
         ApiErrorResponse apiErrorResponse = new ApiErrorResponse(
                 LocalDateTime.now(),
                 message,
-                HttpServletResponse.SC_UNAUTHORIZED,
-                request.getRequestURI()
+                HttpServletResponse.SC_UNAUTHORIZED
         );
         Map<String, Object> payload = Map.of(
                 "path", request.getRequestURI(),
