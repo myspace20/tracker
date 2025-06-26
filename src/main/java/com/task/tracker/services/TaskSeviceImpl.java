@@ -6,7 +6,12 @@ import com.task.tracker.infrastructure.repositories.postgres.TaskRepository;
 import com.task.tracker.models.Project;
 import com.task.tracker.models.Task;
 import com.task.tracker.models.User;
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.Timer;
+import io.micrometer.core.instrument.MeterRegistry;
 import jakarta.transaction.Transactional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
@@ -21,6 +26,10 @@ import java.util.List;
 @Service
 public class TaskSeviceImpl implements TaskService{
 
+    private final Counter taskCounter;
+//    private final Timer taskTimer;
+    private final MeterRegistry meterRegistry;
+
     private final TaskRepository taskRepository;
     private final UserService userService;
     private final ProjectService projectService;
@@ -28,11 +37,27 @@ public class TaskSeviceImpl implements TaskService{
     private final TaskDuePublisher eventPublisher;
 
 
-    public TaskSeviceImpl(TaskRepository taskRepository, UserService userService, ProjectService projectService, TaskDuePublisher eventPublisher) {
+    public TaskSeviceImpl(MeterRegistry meterRegistry, MeterRegistry meterRegistry1, TaskRepository taskRepository, UserService userService, ProjectService projectService, TaskDuePublisher eventPublisher) {
+        this.meterRegistry = meterRegistry1;
         this.taskRepository = taskRepository;
         this.userService = userService;
         this.projectService = projectService;
         this.eventPublisher = eventPublisher;
+        this.taskCounter = Counter.builder("total.tasks.created")
+                .description("Number of taks processed")
+                .tag("tasks","processed")
+                .register(meterRegistry);
+//        this.taskTimer = Timer.builder("tasks.processing.time")
+//                .description("Amount of time taken to process tasks")
+//                .register(meterRegistry);
+    }
+
+    private void incrementTaskCounter() {
+        taskCounter.increment();
+    }
+
+    private void incrementTaskCounter(int amount) {
+        taskCounter.increment(amount);
     }
 
 
@@ -51,17 +76,15 @@ public class TaskSeviceImpl implements TaskService{
 
 
     @Override
-    @Cacheable(
-            value = "paginated_tasks",
-            key = "{#pageNo,#pageSize,#sortBy}"
-    )
+    @Cacheable(value = "paginated_tasks", key = "{#pageNo,#pageSize,#sortBy}")
     public List<Task> getTasks(int pageNo, int pageSize, String sortBy) {
         Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by(Sort.Direction.DESC, sortBy));
+        incrementTaskCounter(pageable.getPageSize());
         return taskRepository.findAll(pageable).getContent();
     }
 
     @Override
-    @Cacheable(value = "task", key = "#id")
+    @Cacheable(value = "tasks", key = "#id")
     public Task getTaskById(Long id) {
         return taskRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFound("Task not found"));
@@ -80,34 +103,26 @@ public class TaskSeviceImpl implements TaskService{
     }
 
     @Override
+    @CacheEvict(value = {"tasks","paginated_tasks", "developer_tasks"}, allEntries = true)
     public Task saveTask(Task task) {
+        incrementTaskCounter();
         return taskRepository.save(task);
     }
 
     @Override
-    @Caching(
-            put = {
-                    @CachePut(value = "tasks", key = "#taskId"),
-                    @CachePut(value = "task", key = "#taskId")
-            }
-    )
+    @CacheEvict(value = {"tasks","paginated_tasks"},key = "#taskId", allEntries = true)
     public Task assignTaskToDeveloper(Long taskId, Long userId) {
         Task task = getTaskById(taskId);
         User developer = userService.getUserById(userId);
         task.setUser(developer);
+        incrementTaskCounter();
         return saveTask(task);
     }
 
-    @Caching(
-            put = {
-                    @CachePut(value = "projects", key = "#projectId"),
-                    @CachePut(value = "project", key = "#projectId"),
-                    @CachePut(value = "tasks", key = "#taskId"),
-                    @CachePut(value = "task", key = "#taskId")
-            }
-    )
     @Override
+    @CacheEvict(value = {"tasks","paginated_tasks"}, key = "#taskId", allEntries = true)
     public Task assignTaskToProject(Long projectId, Long taskId) {
+
         Task task = getTaskById(taskId);
         Project project = projectService.getProjectById(projectId);
         task.setProject(project);
@@ -116,31 +131,24 @@ public class TaskSeviceImpl implements TaskService{
 
 
     @Override
-    @Caching(
-            put = {
-                    @CachePut(value = "tasks", key = "#id"),
-                    @CachePut(value = "task", key = "#id")
-            }
-    )
-    public void updateTask(Long id, Task task) {
+    @CacheEvict(value = {"tasks","paginated_tasks"}, key = "#id", allEntries = true)
+    public Task updateTask(Long id, Task task) {
         Task taskToUpdate = getTaskById(id);
         taskToUpdate.setDescription(task.getDescription());
         taskToUpdate.setStatus(task.getStatus());
         taskToUpdate.setDueDate(task.getDueDate());
         taskToUpdate.setTitle(task.getTitle());
-        saveTask(taskToUpdate);
+        incrementTaskCounter();
+        return saveTask(taskToUpdate);
     }
 
 
     @Override
     @Transactional
-    @Caching(
-            evict = {
-                    @CacheEvict(value = "tasks"),
-                    @CacheEvict(value = "task", key = "#id")
-            })
+    @CacheEvict(value = {"tasks","paginated_tasks"},  key = "#id", allEntries = true)
     public void deleteTask(Long id) {
         Task tasksToDelete = getTaskById(id);
+        incrementTaskCounter();
         taskRepository.delete(tasksToDelete);
     }
 }
