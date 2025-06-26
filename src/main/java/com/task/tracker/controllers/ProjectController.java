@@ -37,7 +37,8 @@ public class ProjectController {
             @RequestParam(value = "pageSize", defaultValue = "10", required = false) int pageSize
     ){
         List<Project> projects = projectService.getAllProjects(pageNo,pageSize);
-        List<ProjectResponse> projectResponses = projects.stream().map(ProjectMapper::toDto).collect(Collectors.toList());
+        List<ProjectResponse> projectResponses = projects.stream()
+                .map(ProjectMapper::toDto).collect(Collectors.toList());
         return new ResponseEntity<>(projectResponses, HttpStatus.OK);
     }
 
