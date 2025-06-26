@@ -35,7 +35,7 @@ public class Project {
     @Column(nullable = false, length = 255)
     private Date deadline;
 
-    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Task> tasks = new ArrayList<>();
 
     @PrePersist
