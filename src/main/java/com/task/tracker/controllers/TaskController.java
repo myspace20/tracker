@@ -79,7 +79,7 @@ public class TaskController {
         return new ResponseEntity<>(tasks, HttpStatus.OK);
     }
 
-    @GetMapping("/developers/{developer_id}")
+    @GetMapping("/users/{developer_id}")
     public ResponseEntity<List<Task>> getTasksByDeveloperId(@PathVariable Long developer_id) {
         List<Task> tasks = taskService.getTasksByDeveloper(developer_id);
         return new ResponseEntity<>(tasks, HttpStatus.OK);
