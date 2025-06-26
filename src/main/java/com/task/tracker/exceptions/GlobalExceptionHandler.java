@@ -33,9 +33,8 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(
                 new ApiErrorResponse(LocalDateTime.now(),
                         errorMessage,
-                        HttpStatus.UNPROCESSABLE_ENTITY.value(),
-                        request.getDescription(false)
-                ),  HttpStatus.UNPROCESSABLE_ENTITY);
+                        HttpStatus.UNPROCESSABLE_ENTITY.value()
+                        ), HttpStatus.UNPROCESSABLE_ENTITY);
     }
 
 
@@ -45,8 +44,7 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(
                 new ApiErrorResponse(LocalDateTime.now(),
                         ex.getMessage(),
-                        HttpStatus.NOT_FOUND.value(),
-                        request.getDescription(false)
+                        HttpStatus.NOT_FOUND.value()
                 ), HttpStatus.NOT_FOUND);
     }
 
@@ -55,8 +53,7 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(
                 new ApiErrorResponse(LocalDateTime.now(),
                         ex.getMessage(),
-                        HttpStatus.INTERNAL_SERVER_ERROR.value(),
-                        request.getDescription(false)
+                        HttpStatus.INTERNAL_SERVER_ERROR.value()
                 ), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }
