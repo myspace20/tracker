@@ -4,7 +4,9 @@ package com.task.tracker.controllers;
 import com.task.tracker.dto.UserResponse;
 import com.task.tracker.infrastructure.repositories.postgres.UserRepository;
 import com.task.tracker.mappers.UserMapper;
+import com.task.tracker.models.Task;
 import com.task.tracker.models.User;
+import com.task.tracker.services.TaskService;
 import com.task.tracker.services.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,15 +20,23 @@ import java.util.List;
 public class UserController {
 
     private final UserService userService;
+    private final TaskService taskService;
 
-    public UserController(UserService userService) {
+    public UserController(UserService userService, TaskService taskService) {
         this.userService = userService;
+        this.taskService = taskService;
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<UserResponse> getUserById(@PathVariable long id) {
         User user = userService.getUserById(id);
         return ResponseEntity.ok(UserMapper.toDto(user));
+    }
+
+    @GetMapping("/{id}/tasks")
+    public ResponseEntity<List<Task>> getTasksByDeveloperId(@PathVariable Long id) {
+        List<Task> tasks = taskService.getTasksByDeveloper(id);
+        return new ResponseEntity<>(tasks, HttpStatus.OK);
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
