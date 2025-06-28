@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.jsontype.impl.LaissezFaireSubTypeValidator;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.github.benmanes.caffeine.cache.Caffeine;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cache.caffeine.CaffeineCacheManager;
@@ -25,10 +26,14 @@ import java.util.List;
 @EnableCaching
 public class CacheConfig {
 
-    int MAXIMUM_CAPACITY;
-    int INITIAL_CAPACITY;
+    @Value("${MAXIMUM_CAPACITY}")
+    private int MAXIMUM_CAPACITY;
 
-    int TTL_EXPIRATION;
+    @Value("${INITIAL_CAPACITY}")
+    private int INITIAL_CAPACITY;
+
+    @Value("${TTL_EXPIRATION}")
+    private int TTL_EXPIRATION;
 
 
     List<String> cacheNames = new ArrayList<>(
@@ -53,8 +58,8 @@ public class CacheConfig {
     @Bean
     public Caffeine<Object, Object>  caffeineBuilder() {
         return Caffeine.newBuilder()
-                .initialCapacity(200)
-                .maximumSize(500)
+                .initialCapacity(INITIAL_CAPACITY)
+                .maximumSize(MAXIMUM_CAPACITY)
                 .recordStats();
     }
 
@@ -80,7 +85,7 @@ public class CacheConfig {
     @Profile("prod")
     public RedisCacheConfiguration redisCacheConfiguration(GenericJackson2JsonRedisSerializer redisSerializer) {
         return RedisCacheConfiguration.defaultCacheConfig()
-                .entryTtl(Duration.ofSeconds(30))
+                .entryTtl(Duration.ofSeconds(TTL_EXPIRATION))
                 .disableCachingNullValues()
                 .serializeValuesWith(
                         RedisSerializationContext.SerializationPair.fromSerializer(redisSerializer)
