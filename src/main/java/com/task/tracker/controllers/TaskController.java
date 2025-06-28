@@ -73,6 +73,12 @@ public class TaskController {
         taskService.deleteTask(id);
     }
 
+    @GetMapping("/projects/{project_id}")
+    public ResponseEntity<List<Task>> getTasksByProjectId(@PathVariable Long project_id) {
+        List<Task> tasks = taskService.getTasksByProject(project_id);
+        return new ResponseEntity<>(tasks, HttpStatus.OK);
+    }
+
     @GetMapping("/users/{developer_id}")
     public ResponseEntity<List<Task>> getTasksByDeveloperId(@PathVariable Long developer_id) {
         List<Task> tasks = taskService.getTasksByDeveloper(developer_id);
