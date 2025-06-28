@@ -27,7 +27,6 @@ import java.util.List;
 public class TaskSeviceImpl implements TaskService{
 
     private final Counter taskCounter;
-//    private final Timer taskTimer;
     private final MeterRegistry meterRegistry;
 
     private final TaskRepository taskRepository;
@@ -37,8 +36,8 @@ public class TaskSeviceImpl implements TaskService{
     private final TaskDuePublisher eventPublisher;
 
 
-    public TaskSeviceImpl(MeterRegistry meterRegistry, MeterRegistry meterRegistry1, TaskRepository taskRepository, UserService userService, ProjectService projectService, TaskDuePublisher eventPublisher) {
-        this.meterRegistry = meterRegistry1;
+    public TaskSeviceImpl(MeterRegistry meterRegistry, TaskRepository taskRepository, UserService userService, ProjectService projectService, TaskDuePublisher eventPublisher) {
+        this.meterRegistry = meterRegistry;
         this.taskRepository = taskRepository;
         this.userService = userService;
         this.projectService = projectService;
@@ -46,10 +45,7 @@ public class TaskSeviceImpl implements TaskService{
         this.taskCounter = Counter.builder("total.tasks.created")
                 .description("Number of taks processed")
                 .tag("tasks","processed")
-                .register(meterRegistry);
-//        this.taskTimer = Timer.builder("tasks.processing.time")
-//                .description("Amount of time taken to process tasks")
-//                .register(meterRegistry);
+                .register(this.meterRegistry);
     }
 
     private void incrementTaskCounter() {
