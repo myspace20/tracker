@@ -268,5 +268,9 @@ both custom data and basic system data.
 ![Custom metrics](docs/images/grafana/Custom_Grafana_Metrics.png)
 
 ## Observations
+Using the same environment to run the application and to test it simultaneously leads to
+inconsistencies in metric dat, especially when attaching jprofiler. These processes compete
+for system resources leading to these inconsistent data.
+Reference: https://www.ej-technologies.com/resources/jprofiler/help/doc/main/profiling.html
 
 
