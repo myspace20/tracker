@@ -256,7 +256,8 @@ The data reveals that neither collector is universally superior and the optimal 
 
 ## Basic and Custom Metrics
 The following is a set metrics collected from the tracker application that consists of 
-both custom data and basic system data.
+both custom data and basic system data. 
+To use the grafana dashboards run the docker compose version of the application.
 
 ### Basic Metrics
 ![Custom metrics](docs/images/grafana/base_metrics.png)
